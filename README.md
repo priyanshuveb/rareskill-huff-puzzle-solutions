@@ -4,9 +4,9 @@
 - [Add1] ✅
 - [Multiply] ✅
 - [NonPayable] ✅
-- [FooBar](https://github.com/rareskills/huff-puzzles/blob/main/src/FooBar.huff)
-- [SimpleStore](https://github.com/rareskills/huff-puzzles/blob/main/src/SimpleStore.huff)
-- [RevertCustom](https://github.com/rareskills/huff-puzzles/blob/main/src/RevertCustom.huff)
+- [FooBar] ✅
+- [SimpleStore] ✅
+- [RevertCustom] ✅
 - [RevertString](https://github.com/rareskills/huff-puzzles/blob/main/src/RevertString.huff)
 - [SumArray](https://github.com/rareskills/huff-puzzles/blob/main/src/SumArray.huff)
 - [Keccak](https://github.com/rareskills/huff-puzzles/blob/main/src/Keccak.huff)

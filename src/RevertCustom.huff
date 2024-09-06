@@ -14,5 +14,12 @@
 #define error OnlyHuff()
 
 #define macro MAIN() = takes(0) returns(0) {
-    
+    // This will push the error selected onto the stack which is of 4 bytes
+    __ERROR(OnlyHuff)                   // [error_selector]
+    0x00 
+    mstore 
+    0x20 
+    0x00 
+    // Revert and not return the error selector
+    revert
 }
