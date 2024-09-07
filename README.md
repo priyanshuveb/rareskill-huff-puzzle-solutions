@@ -7,10 +7,10 @@
 - [FooBar] ✅
 - [SimpleStore] ✅
 - [RevertCustom] ✅
-- [RevertString](https://github.com/rareskills/huff-puzzles/blob/main/src/RevertString.huff)
-- [SumArray](https://github.com/rareskills/huff-puzzles/blob/main/src/SumArray.huff)
-- [Keccak](https://github.com/rareskills/huff-puzzles/blob/main/src/Keccak.huff)
-- [MaxOfArray](https://github.com/rareskills/huff-puzzles/blob/main/src/MaxOfArray.huff)
+- [RevertString] ❌
+- [SumArray] ✅
+- [Keccak] ✅
+- [MaxOfArray] 
 - [Create](https://github.com/rareskills/huff-puzzles/blob/main/src/Create.huff)
 - [Emitter](https://github.com/rareskills/huff-puzzles/blob/main/src/Emitter.huff)
 - [Donations](https://github.com/rareskills/huff-puzzles/blob/main/src/Donations.huff)

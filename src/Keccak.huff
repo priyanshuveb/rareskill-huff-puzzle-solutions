@@ -7,7 +7,24 @@
  *  The task is to write within the `MAIN` macro below, a function that returns the keccak256 of the calldata. Should handle zero calldata
  */
 
-
+// keccak256 does not exists as a keyword, instead sha3 is used
  #define macro MAIN() = takes(0) returns(0) {
-    
+    calldatasize                    // [calldata_size]
+    dup1                            // [calldata_size, calldata_size]
+    iszero                          // [calldata_size == 0, calldata_size]
+    jump_handle0                    // [jump_handle0, calldata_size == 0, calldata_size]
+    jumpi                           // [calldata_size]
+    0x00                            // [0x00, calldata_size]
+    0x00                            // [0x00, 0x00, calldata_size]
+    calldatacopy                    // []                   // Memory: [0x00:calldata]
+    calldatasize                    // [calldata_size]
+    0x00                            // [0x00, calldata_size]
+    sha3                            // [keccak_value]
+    0x00 mstore 0x20 0x00 return
+   
+    jump_handle0:
+        0x00 0x00 return
+        
+
+
  }
