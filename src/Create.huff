@@ -11,15 +11,20 @@
 
 #define function makeContract() payable returns(address)
 // The below is the bytecode(creation code + runtime code) of the above functionality mentioned,the
-// same contract can be found in the ../src/MakeContract.huff for the reference
+// same contract can be found in the ../src/MakeContract.huff for the reference whose bytecode is 
+// defined below
 #define constant CONTRACT_BYTECODE = 0x600f8060093d393df3610004565b620caffe5f5260205ff3
 
 #define macro MAKE_CONTRACT() = takes(0) returns(0) {
     [CONTRACT_BYTECODE] 0x00 mstore
-    // The contract bytecode is 24 bytes(0x18) long and when stored in the stack is padded with 0's on the
+    // The contract bytecode here is 24 bytes(0x18) long and when stored in the stack is padded with 0's on the
     // left side, that's why we have to provide the offset of 8 bytes(0x08) to the create opcode to
-    // copy and execute the bytecode from that offset and ignoring the padded zeroes
+    // copy and execute the bytecode from that offset ignoring the padded zeroes
     // (24 + 8 = 32)
+    // Note: If we won't do the above step then the bytecode deployed will look like this '0x0000000000000000600f8060093d393df3610004565b620caffe5f5260205ff3'
+    // and the `00` opcode if we lookup in evm.codes is for `STOP` which halts the execution and returns 
+    // successfully(true) with `0` value. So, everytime we call the contract it will return successfully
+    // with value `0` and that's why we eliminated the padded zeroes from the bytecode
     0x18 0x08 0x00 create
     0x00 mstore
     // 0x14 0xc return
