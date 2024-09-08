@@ -10,8 +10,8 @@
 - [RevertString] ❌
 - [SumArray] ✅
 - [Keccak] ✅
-- [MaxOfArray] 
-- [Create](https://github.com/rareskills/huff-puzzles/blob/main/src/Create.huff)
+- [MaxOfArray] ✅
+- [Create] ✅
 - [Emitter](https://github.com/rareskills/huff-puzzles/blob/main/src/Emitter.huff)
 - [Donations](https://github.com/rareskills/huff-puzzles/blob/main/src/Donations.huff)
 - [SendEther](https://github.com/rareskills/huff-puzzles/blob/main/src/SendEther.huff)

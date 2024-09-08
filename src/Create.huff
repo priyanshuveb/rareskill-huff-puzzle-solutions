@@ -9,9 +9,29 @@
  *  NOTICE: The contract should revert when an unrecognized function is called
  */
 
- #define function makeContract() payable returns(address)
+#define function makeContract() payable returns(address)
+// The below is the bytecode(creation code + runtime code) of the above functionality mentioned,the
+// same contract can be found in the ../src/MakeContract.huff for the reference
+#define constant CONTRACT_BYTECODE = 0x600f8060093d393df3610004565b620caffe5f5260205ff3
 
+#define macro MAKE_CONTRACT() = takes(0) returns(0) {
+    [CONTRACT_BYTECODE] 0x00 mstore
+    // The contract bytecode is 24 bytes(0x18) long and when stored in the stack is padded with 0's on the
+    // left side, that's why we have to provide the offset of 8 bytes(0x08) to the create opcode to
+    // copy and execute the bytecode from that offset and ignoring the padded zeroes
+    // (24 + 8 = 32)
+    0x18 0x08 0x00 create
+    0x00 mstore
+    // 0x14 0xc return
+    0x20 0x00 return
+}
 
  #define macro MAIN() = takes(0) returns(0) {
-    
+    0x00 calldataload 0xe0 shr                  // [func_selector]
+    __FUNC_SIG(makeContract) eq                 // [make_contract_selector == func_selector]
+    // if func_selector is valid then jump to makeContract otherwise revert
+    makeContract jumpi 0x00 0x00 revert         
+
+    makeContract:
+        MAKE_CONTRACT()
  }
