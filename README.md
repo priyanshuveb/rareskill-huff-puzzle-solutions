@@ -16,7 +16,10 @@
 - [Donations] ✅
 - [SendEther] ✅
 - [BasicBank] ✅
-- [Distribute](https://github.com/rareskills/huff-puzzles/blob/main/src/Distributor.huff)
-- [SimulateArray](https://github.com/rareskills/huff-puzzles/blob/main/src/SimulateArray.huff)
+- [Distribute] ✅
+- [SimulateArray] ❌
+- [MyCreator] ✅
+- [CountTime] ✅
+- [TimeAndBlock] ✅
 
 

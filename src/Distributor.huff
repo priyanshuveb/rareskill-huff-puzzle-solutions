@@ -1,5 +1,4 @@
- 
-/** 
+ /** 
  *  DISTRIBUTE HUFF EXERCISE
  *  
  *  The task is to enable this contract, when called with function `distribute(address[])` to
@@ -14,5 +13,49 @@
 
 
  #define macro MAIN() = takes(0) returns(0) {
-   
+   0x00 calldataload 0xe0 shr
+   // check if called function is `distribute`, otherwise revert
+   __FUNC_SIG(distribute) eq distribute jumpi
+   0x00 0x00 revert
+
+    // get the values from the calldata and load them up onto the stack 
+    distribute:
+        0x04 calldataload               // [offset_increment]
+        0x24 calldataload               // [arr_size, offset_increment]
+        dup1                            // [arr_size, arr_size, offset_increment]
+        iszero                          // [arr_size == 0, arr_size, offset_increment]
+        handle_revert                   // [handle_revert, arr_size == 0, arr_size, offset_increment]
+        jumpi                           // [arr_size, offset_increment]
+        0x00                            // [i, arr_size, offset_increment]
+        loop1                           // [loop1, i, arr_size, offset_increment]
+        jump                            // [i, arr_size, offset_increment]
+    // check i < arr.length for each iteration
+    loop1:
+        dup2 dup2                   // [i, arr_size, i, arr_size, offset_increment]
+        lt                          // [i < arr_size?, i, arr_size, offset_increment]
+        loop2
+        jumpi
+        0x00 0x00 return
+    // send ether to each address by iterating over the array
+    loop2:
+        dup2                           // [arr_size, i, arr_size, offset_increment]
+        callvalue                      // [callvalue, arr_size, i, arr_size, offset_increment]
+        // Calculating ether value to be sent to each address
+        div                            // [callvalue / arr_size, i, arr_size, offset_increment]
+        dup2                           // [i, ether_to_send, i, arr_size, offset_increment]
+        dup5                           // [offset_increment, i, ether_to_send, i, arr_size, offset_increment]
+        mul                            // [offset_increment * i, ether_to_send, i, arr_size, offset_increment]
+        0x44 add                       // [0x44 + offset_increment * i, ether_to_send, i, arr_size, offset_increment]
+        calldataload                   // [arr[i], ether_to_send, i, arr_size, offset_increment]
+        0x00 0x00 0x00 0x00            // [0x00, 0x00 0x00, 0x00, arr[i], ether_to_send, i, arr_size, offset_increment]
+        dup6 dup6 gas                  // [gas, arr[i], ether_to_send, 0x00, 0x00 0x00, 0x00, arr[i], ether_to_send, i, arr_size, offset_increment]
+        call                           // [success/faill, arr[i], ether_to_send, i, arr_size, offset_increment]
+        pop pop pop                    // [i, arr_size, offset_increment]   
+        0x01 add                       // [i+1, arr_size, offset_increment] 
+        loop1                          // [loop1, i+1, arr_size, offset_increment] 
+        jump                           // [i+1, arr_size, offset_increment] 
+
+    handle_revert:
+        0x00 0x00 revert
+
  }

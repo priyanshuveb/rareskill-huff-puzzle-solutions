@@ -9,10 +9,21 @@
 
 #define function getMyCreator() payable returns(address)
 
-#define macro CONSTRUCTOR() = takes(0) returns(0) {
+#define constant CREATOR_ADDRESS_STORAGE_SLOT = FREE_STORAGE_POINTER() // 0
 
+#define macro CONSTRUCTOR() = takes(0) returns(0) {
+    caller
+    [CREATOR_ADDRESS_STORAGE_SLOT]
+    sstore
 }
 
 #define macro MAIN() = takes(0) returns(0) {
-
+    0x00 calldataload 0xe0 shr
+    __FUNC_SIG(getMyCreator) eq getMyCreator jumpi
+    0x00 0x00 revert
+    getMyCreator:
+        [CREATOR_ADDRESS_STORAGE_SLOT]
+        sload
+        0x00 mstore
+        0x20 0x00 return
 }
