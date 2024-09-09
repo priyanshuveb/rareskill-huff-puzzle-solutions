@@ -11,7 +11,34 @@
  
  #define event Value(uint256 indexed, uint256)
 
+#define macro VALUE() = takes(0) returns(0) {
+/*
+    The events are emitted using the `logn` opcode where the n represents the number of topics
+    What are topics? Topics in events are the indexed values and the hash of the event_name
+    The other values in the event emitted which are not indexed are included in `data`
+    
+    Example: Transfer(address indexed to, uint256 amount)
+    Here there are two topics (hash(Transfer), address to) and one `data` (uint256 amount), the opcode 
+    that will be used to emit this emit is log2
+
+    How to emit an event in huff? 
+    Store all the topics onto the stack and store the `data` in the memory.
+    log2 input stack look like this => [offset,size,topic1,topic2]
+    offset: offset of the `data` in the memory
+    size: size of the `data`
+    topic1: the topic1 (usually which is event_hash)
+    topic2: the topic2
+*/
+    0x24 calldataload 0x00 mstore
+    0x04 calldataload
+    __EVENT_HASH(Value)
+    0x20 0x00 log2
+}
 
  #define macro MAIN() = takes(0) returns(0) {
-    
+    0x00 calldataload 0xe0 shr              // [func_selector]
+    __FUNC_SIG(value) eq value jumpi 0x00 0x00 revert
+
+    value:
+        VALUE()
  }

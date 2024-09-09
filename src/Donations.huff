@@ -7,6 +7,51 @@
 
 #define function donated(address) payable returns(uint256)
 
-#define macro MAIN() = takes(0) returns(0) {
+/*
+    When we write contract in solidity with receive/fallback functions it removes the check for to revert
+    if callvalue is being sent to the contract. This check is otherwise added by default.
     
+    So, by not having this check in the huff contract we are already successfully receiving the sent ether
+    
+    All we need to handle is how to store the sent ether against its sender(wallet address), in solidty we do
+    this by `mapping`. You can use the https://github.com/huff-language/huffmate/blob/main/src/data-structures/Hashmap.huff
+    library to directly implement the hash mapping.
+    But since here the problem is very basic, we will be directly handling it by creating our own mapping
+*/
+
+#define macro MAIN() = takes(0) returns(0) {
+    0x00 calldataload 0xe0 shr
+    __FUNC_SIG(donated) eq donated jumpi
+    handle_sent_eth jump
+
+    // return the ether donated by a particular address
+    donated:
+        0x04                
+        calldataload
+        0x00 
+        mstore
+        0x20
+        0x00
+        sha3
+        sload
+        0x00 mstore
+        0x20
+        0x00
+        return
+
+
+    handle_sent_eth:
+        caller                  // [msg.sender]
+        0x00                    // [0x00, msg.sender]
+        mstore                  // []                    // Memory: [0x00: msg.sender]
+        0x20 0x00 sha3          // [sha3(msg.sender)]     // Memory: []
+        dup1                    // [sha3(msg.sender), sha3(msg.sender)]
+        // the hashed value of msg.sender is being used as storage slot, in general any arbitrary value can be used as storage slot
+        sload                   // [value at sha3(msg.sender), sha3(msg.sender)]
+        callvalue           // [msg.value, value at sha3(msg.sender), sha3(msg.sender)]
+        add                     // [msg.value + value at sha3(msg.sender), sha3(msg.sender)]
+        swap1                   // [sha3(msg.sender), msg.value + value at sha3(msg.sender)]
+        sstore                  // []           // Storage: [sha3(msg.sender) -> total_ether_sent]
+        0x00 0x00 return        // []
+
 }

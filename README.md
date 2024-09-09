@@ -12,10 +12,10 @@
 - [Keccak] ✅
 - [MaxOfArray] ✅
 - [Create] ✅
-- [Emitter](https://github.com/rareskills/huff-puzzles/blob/main/src/Emitter.huff)
-- [Donations](https://github.com/rareskills/huff-puzzles/blob/main/src/Donations.huff)
-- [SendEther](https://github.com/rareskills/huff-puzzles/blob/main/src/SendEther.huff)
-- [BasicBank](https://github.com/rareskills/huff-puzzles/blob/main/src/BasicBank.huff)
+- [Emitter] ✅
+- [Donations] ✅
+- [SendEther] ✅
+- [BasicBank] ✅
 - [Distribute](https://github.com/rareskills/huff-puzzles/blob/main/src/Distributor.huff)
 - [SimulateArray](https://github.com/rareskills/huff-puzzles/blob/main/src/SimulateArray.huff)
 
