@@ -24,6 +24,25 @@ The offset is used to locate within the calldata where specific dynamic data sta
 ## Links: 
 - [Reference for detailed overview on encoding](https://www.rareskills.io/post/abi-encoding)
 - [Rareskill Huff Puzzle Repo](https://github.com/RareSkills/huff-puzzles/tree/main)
+- [Pre written huff contracts for complex data structure and tokens that can be imported](https://github.com/huff-language/huffmate/tree/main/src)
+
+## Setup
+
+Get Huff
+```bash
+curl -L get.huff.sh | bash
+huffup
+```
+Installation
+```bash
+git clone https://github.com/priyanshuveb/rareskill-huff-puzzle-solutions.git
+cd rareskill-huff-puzzle-solutions
+forge install
+```
+To run a test
+```bash
+forge test -v --mc CallValue
+```
 
 ## Exercises
 - [CallValue] ✅
@@ -45,7 +64,7 @@ The offset is used to locate within the calldata where specific dynamic data sta
 - [SendEther] ✅
 - [BasicBank] ✅
 - [Distribute] ✅
-- [SimulateArray] ❌
+- [SimulateArray] ✅
 - [MyCreator] ✅
 - [CountTime] ✅
 - [TimeAndBlock] ✅

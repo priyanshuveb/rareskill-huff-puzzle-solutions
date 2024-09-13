@@ -24,6 +24,99 @@
  #define error OutOfBounds()
  #define error ZeroArray()
 
+// We can also manually use 0x00 memory pointer, but it becomes inconveneint when dealing with multiple
+// storage pointers
+#define constant ARRAY_LENGTH_STORAGE_SLOT = FREE_STORAGE_POINTER()
+
  #define macro MAIN() = takes(0) returns(0) {
-    
+    0x00 calldataload 0xe0 shr
+    dup1 __FUNC_SIG(pushh) eq pushh jumpi
+    dup1 __FUNC_SIG(popp) eq popp jumpi
+    dup1 __FUNC_SIG(read) eq read jumpi
+    dup1 __FUNC_SIG(length) eq length jumpi
+    __FUNC_SIG(write) eq write jumpi
+
+    0x00 0x00 revert
+
+    pushh:
+        PUSHH()
+    popp:
+        POPP()
+    read:
+        READ()
+    length:
+        LENGTH()
+    write:
+        WRITE()
+ }
+
+ #define macro LENGTH() = takes(0) returns(0) {
+    [ARRAY_LENGTH_STORAGE_SLOT]
+    sload
+    0x00 mstore
+    0x20 0x00 return
+ }
+
+ #define macro PUSHH() = takes(0) returns(0) {
+    [ARRAY_LENGTH_STORAGE_SLOT]         // [ARRAY_LENGTH_STORAGE_SLOT]
+    sload                               // [length]
+    dup1 0x01 add                       // [new_length,index]               // array_last_index = array_length - 1
+    [ARRAY_LENGTH_STORAGE_SLOT] sstore
+    0x20 mul 0x20 add [ARRAY_LENGTH_STORAGE_SLOT] add
+    0x04 calldataload
+    swap1
+    sstore
+    0x00 0x00 return
+ }
+
+ #define macro READ() = takes(0) returns(0) {
+    0x04 calldataload                           // [input_index]
+    dup1                                        // [input_index, input_index]
+    [ARRAY_LENGTH_STORAGE_SLOT]                 // [ARRAY_LENGTH_STORAGE_SLOT, input_index, input_index]
+    sload                                       // [length, input_index, input_index]
+    gt continue jumpi
+    // Revert if index is out of bounds
+    __ERROR(OutOfBounds) 0x00 mstore
+    0x20 0x00 revert
+
+    continue:
+        0x20 mul                                      // [0x20 * input_index]
+        0x20 add                                      // [0x20 * input_index + 0x20]
+        [ARRAY_LENGTH_STORAGE_SLOT] add               // [0x20 * input_index + 0x20 + ARRAY_LENGTH_STORAGE_SLOT]
+        sload                                         // [array_value]
+        0x00 mstore                                   // []             // Memory: [0x00: array_value]
+        // Return array value
+        0x20 0x00 return
+ }
+
+// a way to handle pop is to reduce the length of array by 1 magnitude and not by updating the last value with 0,
+// because otherwise it will always return `0` for that index instead of `OutOfBounds`
+ #define macro POPP() = takes(0) returns(0) {
+    [ARRAY_LENGTH_STORAGE_SLOT] sload                 // [length]
+    // check if array exists
+    dup1 iszero rev jumpi                             // [length]
+    0x01 swap1                                        // [length, 0x01]
+    sub                                               // [length - 1]
+    [ARRAY_LENGTH_STORAGE_SLOT] sstore                // []     // Storage: [ARRAY_LENGTH_STORAGE_SLOT: new_length]
+    0x00 0x00 return
+    rev:
+        __ERROR(ZeroArray) 0x00 mstore
+        0x20 0x00 revert
+ }
+
+ #define macro WRITE() = takes(0) returns(0) {
+    0x04 calldataload dup1                              // [index, index]
+    [ARRAY_LENGTH_STORAGE_SLOT] sload                   // [length, index, index]
+    gt continue jumpi                                   // []
+    __ERROR(OutOfBounds) 0x00 mstore
+    0x20 0x00 revert
+
+    continue:
+        [ARRAY_LENGTH_STORAGE_SLOT]                     // [slot, index]
+        swap1                                           // [index, slot]
+        0x20 mul 0x20 add add                           // [((0x20 * i) + 0x20) + slot] = [storage_pointer_to_write_offset]
+        0x04 0x20 add calldataload                      // [input_value, write_pointer_offset]
+        swap1                                           // [write_pointer_offset, input_value]
+        sstore                                          // []   // Storage: [write_pointer_offset:input_value]
+        0x00 0x00 return
  }
