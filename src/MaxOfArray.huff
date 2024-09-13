@@ -7,6 +7,8 @@
  *  NOTICE: The contract should revert when an unrecognized function is called
  */
 
+// ------------------------------------------------------
+
 /*
 function maxOfArray(uint256[] memory arr) payable public returns(uitn256) {
     uint256 max = 0;
@@ -24,55 +26,55 @@ function maxOfArray(uint256[] memory arr) payable public returns(uitn256) {
 
 #define macro MAX_OF_ARRAY() = takes(0) returns(0) {
  
-    0x04 calldataload           // [offset_increment]
-    0x04 0x20 add calldataload  // [arr_size]
-    dup1                        // [arr_size, arr_size, offset_increment]
-    iszero                      // [arr_size == 0, arr_size, offset_increment]
-    emptyArray                  // [emptyArray, arr_size == 0, arr_size, offset_increment]
-    jumpi                       // [arr_size, offset_increment]
-    0x00 0x00                   // [i, max_val, arr_size, offset_increment]
-    loop1                       // [loop1, i, max_val, arr_size, offset_increment]
-    jump                        // [i, max_val, arr_size, offset_increment]
+    0x04 calldataload           // [offset]
+    dup1 0x04 add calldataload  // [arr_size, offset]
+    dup1                        // [arr_size, arr_size, offset]
+    iszero                      // [arr_size == 0, arr_size, offset]
+    emptyArray                  // [emptyArray, arr_size == 0, arr_size, offset]
+    jumpi                       // [arr_size, offset]
+    0x00 0x00                   // [i, max_val, arr_size, offset]
+    loop1                       // [loop1, i, max_val, arr_size, offset]
+    jump                        // [i, max_val, arr_size, offset]
 
     // revert if array is empty
     emptyArray:
         0x00 0x00 revert
 
     loop1:
-        dup3                        // [arr_size, i, max_val, arr_size, offset_increment]
-        dup2                        // [i, arr_size, i, max_val, arr_size, offset_increment]
-        lt                          // [i < arr_size, i, max_val, arr_size, offset_increment]
-        loop2                       // [loop2, i < arr_size, i, max_val, arr_size, offset_increment]
-        jumpi                       // [i, max_val, arr_size, offset_increment]
-        dup2                        // [max_val, i, max_val, arr_size, offset_increment]
+        dup3                        // [arr_size, i, max_val, arr_size, offset]
+        dup2                        // [i, arr_size, i, max_val, arr_size, offset]
+        lt                          // [i < arr_size, i, max_val, arr_size, offset]
+        loop2                       // [loop2, i < arr_size, i, max_val, arr_size, offset]
+        jumpi                       // [i, max_val, arr_size, offset]
+        dup2                        // [max_val, i, max_val, arr_size, offset]
         // return the array max value when array exhausts
         0x00 mstore 0x20 0x00 return
 
     loop2:
-        0x44                // [0x44, i, max_val, arr_size, offset_increment]
-        dup2                // [i, 0x44, i, max_val, arr_size, offset_increment]
-        dup6                // [offset_increment, i, 0x44, i, max_val, arr_size, offset_increment]
-        mul                 // [offset_increment * i, 0x44, i, max_val, arr_size, offset_increment]
-        add                 // [arr_val_offset, i, max_val, arr_size, offset_increment]
-        calldataload        // [arr_val, i, max_val, arr_size, offset_increment]
-        dup1                // [arr_val, arr_val, i, max_val, arr_size, offset_increment]
-        dup4                // [max_val, arr_val, arr_val, i, max_val, arr_size, offset_increment]
-        gt                  // [max_val > arr_val, arr_val, i, max_val, arr_size, offset_increment]
-        loop3               // [loop3, max_val > arr_val, arr_val, i, max_val, arr_size, offset_increment]
-        jumpi               // [arr_val, i, max_val, arr_size, offset_increment]
+        dup1                // [i, i, max_val, arr_size, offset] // offset + 0x04 + i * 0x20
+        0x20 mul            // [i * 0x20, i, max_val, arr_size, offset]
+        0x24 add            // [i * 0x20 + 0x24, i, max_val, arr_size, offset]
+        dup5 add            // [i * 0x20 + 0x24 + offset, i, max_val, arr_size, offset]
+        calldataload        // [arr_val, i, max_val, arr_size, arr_size, offset]
+
+        dup1                // [arr_val, arr_val, i, max_val, arr_size, offset]
+        dup4                // [max_val, arr_val, arr_val, i, max_val, arr_size, offset]
+        gt                  // [max_val > arr_val, arr_val, i, max_val, arr_size, offset]
+        loop3               // [loop3, max_val > arr_val, arr_val, i, max_val, arr_size, offset]
+        jumpi               // [arr_val, i, max_val, arr_size, offset]
         // assigning the arr value to the max value, since arr_val > max_val
-        swap2               // [max_val, i, arr_val, arr_size, offset_increment]
-        pop                 // [i, arr_val, arr_size, offset_increment]
+        swap2               // [max_val, i, arr_val, arr_size, offset]
+        pop                 // [i, arr_val, arr_size, offset]
         // incrementing i by 1
-        0x01 add            // [1 + i, arr_val, arr_size, offset_increment]
-        loop1               // [loop1, i, arr_val, arr_size, offset_increment]
-        jump                // [i, arr_val, arr_size, offset_increment]
+        0x01 add            // [1 + i, arr_val, arr_size, offset]
+        loop1               // [loop1, i, arr_val, arr_size, offset]
+        jump                // [i, arr_val, arr_size, offset]
     
     loop3:
-        pop         // [i, max_val, arr_size, offset_increment]
+        pop         // [i, max_val, arr_size, offset]
         // incrementing i by 1
-        0x01 add    // [i + 1, max_val, arr_size, offset_increment]
-        loop1       // [loop1, i + 1, max_val, arr_size, offset_increment]
+        0x01 add    // [i + 1, max_val, arr_size, offset]
+        loop1       // [loop1, i + 1, max_val, arr_size, offset]
         jump
 
 }

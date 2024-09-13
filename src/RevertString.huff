@@ -11,7 +11,17 @@
  *  The task is to write within the `MAIN` macro below, huff code that reverts (all the time) with the string error message `Only Huff`
 */
 
-
+/*
+    Returning strings is bit of an extra work since it is an dynamic data, to return string we require 3 parameters
+    1. offset of the string
+    2. the length of the string
+    3. the encoded string itself
+    4. string being a dynamic data, we have to do right padding to the hex value. Since strings are encoded like that only
+*/
 #define macro MAIN() = takes(0) returns(0) {
-    
+   
+   0x20 0x00 mstore             // Memory: 0x00->offset
+   0x09 0x20 mstore             // Memory: 0x00 -> offset, 0x20 -> array.length
+   __RIGHTPAD(0x4f6e6c792048756666) 0x40 mstore     // Memory: 0x00 -> offset, 0x20 -> array.length, 0x40 -> encoded right padded string
+   0x60 0x00 revert             // Revert all three value in the memory
 }

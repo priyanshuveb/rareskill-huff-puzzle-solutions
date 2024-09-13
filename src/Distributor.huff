@@ -20,40 +20,40 @@
 
     // get the values from the calldata and load them up onto the stack 
     distribute:
-        0x04 calldataload               // [offset_increment]
-        0x24 calldataload               // [arr_size, offset_increment]
-        dup1                            // [arr_size, arr_size, offset_increment]
-        iszero                          // [arr_size == 0, arr_size, offset_increment]
-        handle_revert                   // [handle_revert, arr_size == 0, arr_size, offset_increment]
-        jumpi                           // [arr_size, offset_increment]
-        0x00                            // [i, arr_size, offset_increment]
-        loop1                           // [loop1, i, arr_size, offset_increment]
-        jump                            // [i, arr_size, offset_increment]
+        0x04 calldataload               // [offset]
+        0x24 calldataload               // [arr_size, offset]
+        dup1                            // [arr_size, arr_size, offset]
+        iszero                          // [arr_size == 0, arr_size, offset]
+        handle_revert                   // [handle_revert, arr_size == 0, arr_size, offset]
+        jumpi                           // [arr_size, offset]
+        0x00                            // [i, arr_size, offset]
+        loop1                           // [loop1, i, arr_size, offset]
+        jump                            // [i, arr_size, offset]
     // check i < arr.length for each iteration
     loop1:
-        dup2 dup2                   // [i, arr_size, i, arr_size, offset_increment]
-        lt                          // [i < arr_size?, i, arr_size, offset_increment]
+        dup2 dup2                   // [i, arr_size, i, arr_size, offset]
+        lt                          // [i < arr_size?, i, arr_size, offset]
         loop2
         jumpi
         0x00 0x00 return
     // send ether to each address by iterating over the array
     loop2:
-        dup2                           // [arr_size, i, arr_size, offset_increment]
-        callvalue                      // [callvalue, arr_size, i, arr_size, offset_increment]
+        dup2                           // [arr_size, i, arr_size, offset]
+        callvalue                      // [callvalue, arr_size, i, arr_size, offset]
         // Calculating ether value to be sent to each address
-        div                            // [callvalue / arr_size, i, arr_size, offset_increment]
-        dup2                           // [i, ether_to_send, i, arr_size, offset_increment]
-        dup5                           // [offset_increment, i, ether_to_send, i, arr_size, offset_increment]
-        mul                            // [offset_increment * i, ether_to_send, i, arr_size, offset_increment]
-        0x44 add                       // [0x44 + offset_increment * i, ether_to_send, i, arr_size, offset_increment]
-        calldataload                   // [arr[i], ether_to_send, i, arr_size, offset_increment]
-        0x00 0x00 0x00 0x00            // [0x00, 0x00 0x00, 0x00, arr[i], ether_to_send, i, arr_size, offset_increment]
-        dup6 dup6 gas                  // [gas, arr[i], ether_to_send, 0x00, 0x00 0x00, 0x00, arr[i], ether_to_send, i, arr_size, offset_increment]
-        call                           // [success/faill, arr[i], ether_to_send, i, arr_size, offset_increment]
-        pop pop pop                    // [i, arr_size, offset_increment]   
-        0x01 add                       // [i+1, arr_size, offset_increment] 
-        loop1                          // [loop1, i+1, arr_size, offset_increment] 
-        jump                           // [i+1, arr_size, offset_increment] 
+        div                            // [callvalue / arr_size, i, arr_size, offset]
+        dup2                           // [i, ether_to_send, i, arr_size, offset]
+        dup5                           // [offset, i, ether_to_send, i, arr_size, offset]
+        mul                            // [offset * i, ether_to_send, i, arr_size, offset]
+        0x44 add                       // [0x44 + offset * i, ether_to_send, i, arr_size, offset]
+        calldataload                   // [arr[i], ether_to_send, i, arr_size, offset]
+        0x00 0x00 0x00 0x00            // [0x00, 0x00 0x00, 0x00, arr[i], ether_to_send, i, arr_size, offset]
+        dup6 dup6 gas                  // [gas, arr[i], ether_to_send, 0x00, 0x00 0x00, 0x00, arr[i], ether_to_send, i, arr_size, offset]
+        call                           // [success/faill, arr[i], ether_to_send, i, arr_size, offset]
+        pop pop pop                    // [i, arr_size, offset]   
+        0x01 add                       // [i+1, arr_size, offset] 
+        loop1                          // [loop1, i+1, arr_size, offset] 
+        jump                           // [i+1, arr_size, offset] 
 
     handle_revert:
         0x00 0x00 revert

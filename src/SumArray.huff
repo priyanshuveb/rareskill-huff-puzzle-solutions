@@ -8,59 +8,60 @@
  *  NOTICE: The contract should revert when an unrecognized function is called
  */
 
+// -----------------------------------------------------------
+
 // Array in calldata has 3 parts: offset + array size + array values
-// offset: represents the bytes to jump from one array value to another
+// offset: represents the position at which the dynamic data (array) will start after the function selector
 // array size: the size of the array
 // array values: all the array values appended sequentially
+
+// -----------------------------------------------------------
 
 /*
 uint sum = 0;
 for(uint i = 0; i < array.length; i++) {
     sum += array[i];
 }
-
-array.length = 0x24 calldataload 
-how much i will increment per iteration = 0x04 calldataload
-array input values size = calldatasize - 68 bytes(2 bytes for func_selector, 32 bytes for offset, 32 bytes for array) // 68bytes = 0x44 in hex
 */
 
-// Note: there is redundant dup1 at the starting of the macro SUM_ARRAY which duplicates arr_size, it is of no significance
 #define function sumArray(uint256[]) payable returns(uint256)
 #define macro SUM_ARRAY() = takes(0) returns(0) {
-    0x04 calldataload                   // [offset_increment]
-    0x24 calldataload                   // [arr_size, offset_increment]
-    dup1                                // [arr_size, arr_size, offset_increment]
-    0x00                                // [sum, arr_size, arr_size, offset_increment]
-    0x00                                // [i, sum, arr_size, arr_size, offset_increment]
+    0x04 calldataload                   // [offset]
+    dup1 0x04 add calldataload          // [arr_size, offset]
+    // initialising `i` and `sum` variables
+    0x00                                // [sum, arr_size, offset]
+    0x00                                // [i, sum, arr_size, offset]
     loop1
     jump
-   
+
+   // check if i < array.length
     loop1:
-        dup3                // [arr_size, i, sum, arr_size, arr_size, offset_increment] 
-        dup2                // [i, arr_size, i, sum, arr_size, arr_size,offset_increment] 
-        lt                  // [i < arr_size?, i, sum, arr_size, arr_size, offset_increment]
-        loop2               // [loop2, i < arr_size?, i, sum, arr_size, arr_size, offset_increment]
-        jumpi               // [i, sum, arr_size, arr_size, offset_increment]
+        dup3                // [arr_size, i, sum, arr_size, offset] 
+        dup2                // [i, arr_size, i, sum, arr_size,offset] 
+        lt                  // [i < arr_size?, i, sum, arr_size, offset]
+        loop2               // [loop2, i < arr_size?, i, sum, arr_size, offset]
+        jumpi               // [i, sum, arr_size, offset]
        // return sum
         swap1
         0x00 mstore 0x20 0x00 return
 
+    // iterating over the array and calculating the sum
     loop2:
-        dup1                // [i, i, sum, arr_size, arr_size, offset_increment]
-        dup6                // [offset_inc, i, i, sum, arr_size, arr_size, offset_increment]
-        mul                 // [offset_inc * i, i, sum, arr_size, arr_size, offset_increment]
-        0x44                // [0x44, offset_inc * i, i, sum, arr_size, arr_size, offset_increment]
-        add                // [0x44 + offset_inc * i, i, sum, arr_size, arr_size, offset_increment]
-        calldataload        // [input_param, i, sum, arr_size, arr_size, offset_increment]
-        dup3                // [sum, input_param, i, sum, arr_size, arr_size, offset_increment]
-        add                 // [new_sum, i, sum, arr_size, arr_size, offset_increment]
-        swap2               // [sum, i, new_sum, arr_size, arr_size, offset_increment]
-        pop                 // [i, new_sum, arr_size, arr_size, offset_increment]
+ 
+        dup1                // [i, i, sum, arr_size, offset]
+        0x20 mul            // [i * 0x20, i, sum, arr_size, offset]
+        0x24 add            // [i * 0x20 + 0x24, i, sum, arr_size, offset]
+        dup5 add            // [i * 0x20 + 0x24 + offset, i, sum, arr_size, offset]
+        calldataload        // [input_param, i, sum, arr_size, offset]
+        dup3                // [sum, input_param, i, sum, arr_size, offset]
+        add                 // [new_sum, i, sum, arr_size, offset]
+        swap2               // [sum, i, new_sum, arr_size, offset]
+        pop                 // [i, new_sum, arr_size, offset]
         // increment i value by 1
-        0x01                // [0x01, i, new_sum, arr_size, arr_size, offset_increment]
-        add                 // [1+ i, new_sum, arr_size, arr_size, offset_increment]
-        loop1               // [loop1, 1+ i, new_sum, arr_size, arr_size, offset_increment]
-        jump                // [1+ i, new_sum, arr_size, arr_size, offset_increment]
+        0x01                // [0x01, i, new_sum, arr_size, offset]
+        add                 // [1+ i, new_sum, arr_size, offset]
+        loop1               // [loop1, 1+ i, new_sum, arr_size, offset]
+        jump                // [1+ i, new_sum, arr_size, offset]
 
 }
 

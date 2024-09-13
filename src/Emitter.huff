@@ -29,10 +29,10 @@
     topic1: the topic1 (usually which is event_hash)
     topic2: the topic2
 */
-    0x24 calldataload 0x00 mstore
-    0x04 calldataload
-    __EVENT_HASH(Value)
-    0x20 0x00 log2
+    0x24 calldataload 0x00 mstore               // Store `data` parameter in memory
+    0x04 calldataload                           // Store indexed param(topic2) onto stack
+    __EVENT_HASH(Value)                         // Store indexed param(topic1) onto stack
+    0x20 0x00 log2                              // 
 }
 
  #define macro MAIN() = takes(0) returns(0) {
