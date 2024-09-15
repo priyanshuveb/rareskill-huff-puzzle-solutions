@@ -21,6 +21,8 @@ The offset is used to locate within the calldata where specific dynamic data sta
 #### Quick lookup info
 - ASCII values occupies 1 byte(2 hex char)
 - 1 byte = 8 bits = 2 hex char
+- [evm.codes for opcode references](https://www.evm.codes/?fork=cancun)
+- [evm.playground for analysing the bytecode](https://www.evm.codes/playground?fork=shanghai)
 ## Links: 
 - [Reference for detailed overview on encoding](https://www.rareskills.io/post/abi-encoding)
 - [Rareskill Huff Puzzle Repo](https://github.com/RareSkills/huff-puzzles/tree/main)
