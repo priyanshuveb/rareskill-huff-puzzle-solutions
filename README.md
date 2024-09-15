@@ -33,6 +33,12 @@ Get Huff
 curl -L get.huff.sh | bash
 huffup
 ```
+
+Compile huff code to get the bytecode if needed 
+```bash
+huffc ./src/fileName.huff -b
+```
+
 Installation
 ```bash
 git clone https://github.com/priyanshuveb/rareskill-huff-puzzle-solutions.git
